@@ -5,6 +5,8 @@ VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QiuKitFramework", "QiuKitFramework\QiuKitFramework.csproj", "{E3F2A003-ADFA-480C-A4A7-633FF0DF0445}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QiuKitCore", "QiuKitCore\QiuKitCore.csproj", "{13FEB562-D0DC-4945-BB63-31210DBA7581}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{E3F2A003-ADFA-480C-A4A7-633FF0DF0445}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E3F2A003-ADFA-480C-A4A7-633FF0DF0445}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E3F2A003-ADFA-480C-A4A7-633FF0DF0445}.Release|Any CPU.Build.0 = Release|Any CPU
+		{13FEB562-D0DC-4945-BB63-31210DBA7581}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{13FEB562-D0DC-4945-BB63-31210DBA7581}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{13FEB562-D0DC-4945-BB63-31210DBA7581}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{13FEB562-D0DC-4945-BB63-31210DBA7581}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

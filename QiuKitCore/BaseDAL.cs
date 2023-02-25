@@ -1,23 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Reflection;
+using System.Text;
 
-namespace QiuKitFramework
+namespace QiuKitCore
 {
     /* 
     *|--------------------------------------------------------|
-    *|  这个类采用.NET Framework4.6.1作为基础框架             |
+    *|  这个类采用.NET Core3.1作为基础框架                    |
     *|  这个是仓储层的一个基类，自带一般规则下的增删改查方法  |
     *|  所有仓储层类都要继承这个类，T的类型为对应的实体类     |
     *|  类中需要声明常量，如table=对应的数据库表名            |
     *|--------------------------------------------------------|
     *                                                   By Qjh
     */
-    public class BaseDAL<T> where T:class,new()
+    public class BaseDAL<T> where T : class, new()
     {
         private static BaseDAL<T> _Instance = null;
         public static BaseDAL<T> Instance
@@ -43,14 +41,14 @@ namespace QiuKitFramework
         /// <param name="table">数据表表名</param>
         /// <param name="condition">查询条件，不带Where</param>
         /// <returns></returns>
-        public List<T> Select(string table,string condition)
+        public List<T> Select(string table, string condition)
         {
             try
             {
                 string strSql = SqlHelper.Instance.SELECT("*", table, condition);
                 DataTable dt = SqlHelper.Instance.ExecuteDataset(connStr, strSql).Tables[0];
 
-                List<T> list = new List<T>();               
+                List<T> list = new List<T>();
                 //遍历DataTable
                 foreach (DataRow dr in dt.Rows)
                 {
@@ -60,7 +58,7 @@ namespace QiuKitFramework
                     foreach (PropertyInfo field in properties)  //遍历字段名
                     {
                         //若字段名在DataTable中可以找到相同的列，那么就给该字段赋值
-                        if(dt.Columns.Contains(field.Name))
+                        if (dt.Columns.Contains(field.Name))
                         {
                             field.SetValue(model, dr[$"{field.Name}"]);
                         }
@@ -69,7 +67,7 @@ namespace QiuKitFramework
                 }
                 return list;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return null;
             }
@@ -82,7 +80,7 @@ namespace QiuKitFramework
         /// <param name="table">数据库表名</param>
         /// <param name="model">带有数据的实体类</param>
         /// <returns>成功返回True</returns>
-        public bool Insert(string table,T model)
+        public bool Insert(string table, T model)
         {
             try
             {
@@ -99,10 +97,10 @@ namespace QiuKitFramework
                 fields.TrimEnd(',');
                 values.TrimEnd(',');
 
-                string strSql = SqlHelper.Instance.INSERT(table,fields,values);
-                int result = SqlHelper.Instance.ExecuteNonQuery(connStr,strSql);
-                if(result >0)
-                        return true;
+                string strSql = SqlHelper.Instance.INSERT(table, fields, values);
+                int result = SqlHelper.Instance.ExecuteNonQuery(connStr, strSql);
+                if (result > 0)
+                    return true;
                 return false;
             }
             catch (Exception ex)
@@ -141,7 +139,7 @@ namespace QiuKitFramework
         /// <param name="model">带有数据的实体类(作为修改后的值)</param>
         /// <param name="condition">新增条件，不带Where</param>
         /// <returns></returns>
-        public bool Update(string table, T model,string condition)
+        public bool Update(string table, T model, string condition)
         {
             try
             {
@@ -155,7 +153,7 @@ namespace QiuKitFramework
                 //去除最后一个逗号
                 fields.TrimEnd(',');
 
-                string strSql = SqlHelper.Instance.UPDATE(table,fields,condition);
+                string strSql = SqlHelper.Instance.UPDATE(table, fields, condition);
                 int result = SqlHelper.Instance.ExecuteNonQuery(connStr, strSql);
                 if (result > 0)
                     return true;
@@ -166,6 +164,5 @@ namespace QiuKitFramework
                 return false;
             }
         }
-
     }
 }
