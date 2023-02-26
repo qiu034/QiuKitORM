@@ -222,6 +222,8 @@ namespace QiuKitFramework
         /// <returns></returns>
         public string SELECT(string fields, string table, string condition)
         {
+            if (string.IsNullOrEmpty(condition))
+                return $"SELECT {fields} FROM {table}";
             return $"SELECT {fields} FROM {table} WHERE {condition} ";
         }
 

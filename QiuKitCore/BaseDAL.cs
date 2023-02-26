@@ -91,11 +91,11 @@ namespace QiuKitCore
                 foreach (PropertyInfo field in properties)
                 {
                     fields += $"{field.Name},";
-                    values += $"'{field.GetValue(field.Name)}',";
+                    values += $"'{field.GetValue(model)}',";
                 }
                 //去除最后一个逗号
-                fields.TrimEnd(',');
-                values.TrimEnd(',');
+                fields = fields.TrimEnd(',');
+                values = values.TrimEnd(',');
 
                 string strSql = SqlHelper.Instance.INSERT(table, fields, values);
                 int result = SqlHelper.Instance.ExecuteNonQuery(connStr, strSql);
@@ -148,10 +148,10 @@ namespace QiuKitCore
                 PropertyInfo[] properties = model.GetType().GetProperties();
                 foreach (PropertyInfo field in properties)
                 {
-                    fields += $"{field.Name}='{field.GetValue(field.Name)}',";
+                    fields += $"{field.Name}='{field.GetValue(model)}',";
                 }
                 //去除最后一个逗号
-                fields.TrimEnd(',');
+                fields = fields.TrimEnd(',');
 
                 string strSql = SqlHelper.Instance.UPDATE(table, fields, condition);
                 int result = SqlHelper.Instance.ExecuteNonQuery(connStr, strSql);
