@@ -95,10 +95,10 @@ namespace QiuKitCore
                     {
                         continue;
                     }
-                    
+
                     //若为自增序列，则跳过
-                    QiuKitModelAttribute  attribute = field.Attributes.GetType().GetCustomAttribute<QiuKitModelAttribute>();
-                    if (attribute.IsIdentity == true)
+                    QiuKitModelAttribute customAttribute = field.GetCustomAttribute(typeof(QiuKitModelAttribute)) as QiuKitModelAttribute;
+                    if (customAttribute != null && customAttribute.IsIdentity == true)
                     {
                         continue;
                     }
@@ -161,6 +161,19 @@ namespace QiuKitCore
                 PropertyInfo[] properties = model.GetType().GetProperties();
                 foreach (PropertyInfo field in properties)
                 {
+                    //若字段值为空，则跳过
+                    if (field.GetValue(model) == null)
+                    {
+                        continue;
+                    }
+
+                    //若为自增序列，则跳过
+                    QiuKitModelAttribute customAttribute = field.GetCustomAttribute(typeof(QiuKitModelAttribute)) as QiuKitModelAttribute;
+                    if (customAttribute != null && customAttribute.IsIdentity == true)
+                    {
+                        continue;
+                    }
+
                     fields += $"{field.Name}='{field.GetValue(model)}',";
                 }
                 //去除最后一个逗号

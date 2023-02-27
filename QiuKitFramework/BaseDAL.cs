@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
+using System.Runtime.InteropServices;
 
 namespace QiuKitFramework
 {
@@ -99,8 +100,8 @@ namespace QiuKitFramework
                     }
 
                     //若为自增序列，则跳过
-                    QiuKitModelAttribute attribute = field.Attributes.GetType().GetCustomAttribute<QiuKitModelAttribute>();
-                    if (attribute.IsIdentity == true)
+                    QiuKitModelAttribute customAttribute = field.GetCustomAttribute(typeof(QiuKitModelAttribute)) as QiuKitModelAttribute;
+                    if (customAttribute != null && customAttribute.IsIdentity == true)
                     {
                         continue;
                     }
@@ -163,6 +164,19 @@ namespace QiuKitFramework
                 PropertyInfo[] properties = model.GetType().GetProperties();
                 foreach (PropertyInfo field in properties)
                 {
+                    //若字段值为空，则跳过
+                    if (field.GetValue(model) == null)
+                    {
+                        continue;
+                    }
+
+                    //若为自增序列，则跳过
+                    QiuKitModelAttribute customAttribute = field.GetCustomAttribute(typeof(QiuKitModelAttribute)) as QiuKitModelAttribute;
+                    if (customAttribute != null && customAttribute.IsIdentity == true)
+                    {
+                        continue;
+                    }
+
                     fields += $"{field.Name}='{field.GetValue(model)}',";
                 }
                 //去除最后一个逗号
