@@ -92,10 +92,19 @@ namespace QiuKitFramework
                 PropertyInfo[] properties = model.GetType().GetProperties();
                 foreach (PropertyInfo field in properties)
                 {
-                    if(field.GetValue(model) == null)
+                    //若字段值为空，则跳过
+                    if (field.GetValue(model) == null)
                     {
                         continue;
                     }
+
+                    //若为自增序列，则跳过
+                    QiuKitModelAttribute attribute = field.Attributes.GetType().GetCustomAttribute<QiuKitModelAttribute>();
+                    if (attribute.IsIdentity == true)
+                    {
+                        continue;
+                    }
+
                     fields += $"{field.Name},";
                     values += $"'{field.GetValue(model)}',";
                 }
