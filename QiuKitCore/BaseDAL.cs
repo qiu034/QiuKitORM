@@ -90,6 +90,10 @@ namespace QiuKitCore
                 PropertyInfo[] properties = model.GetType().GetProperties();
                 foreach (PropertyInfo field in properties)
                 {
+                    if (field.GetValue(model) == null)
+                    {
+                        continue;
+                    }
                     fields += $"{field.Name},";
                     values += $"'{field.GetValue(model)}',";
                 }
