@@ -15,7 +15,7 @@ namespace QiuKitCore
     *|--------------------------------------------------------|
     *                                                   By Qjh
     */
-    public class BaseDAL<T> where T : class, new()
+    public class BaseDAL<T> :IBaseDAL<T>  where T : class, new()
     {
         private static BaseDAL<T> _Instance = null;
         public static BaseDAL<T> Instance
@@ -69,7 +69,7 @@ namespace QiuKitCore
             }
             catch (Exception ex)
             {
-                return null;
+                throw new Exception(ex.ToString());
             }
         }
 
@@ -118,7 +118,7 @@ namespace QiuKitCore
             }
             catch (Exception ex)
             {
-                return false;
+                throw new Exception(ex.ToString());
             }
         }
 
@@ -140,7 +140,7 @@ namespace QiuKitCore
             }
             catch (Exception ex)
             {
-                return false;
+                throw new Exception(ex.ToString());
             }
         }
 
@@ -187,7 +187,7 @@ namespace QiuKitCore
             }
             catch (Exception ex)
             {
-                return false;
+                throw new Exception(ex.ToString());
             }
         }
     }

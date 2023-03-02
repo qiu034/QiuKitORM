@@ -72,7 +72,7 @@ namespace QiuKitFramework
             }
             catch(Exception ex)
             {
-                return null;
+                throw new Exception(ex.ToString());
             }
         }
 
@@ -121,7 +121,7 @@ namespace QiuKitFramework
             }
             catch (Exception ex)
             {
-                return false;
+                throw new Exception(ex.ToString());
             }
         }
 
@@ -143,7 +143,7 @@ namespace QiuKitFramework
             }
             catch (Exception ex)
             {
-                return false;
+                throw new Exception(ex.ToString());
             }
         }
 
@@ -190,7 +190,7 @@ namespace QiuKitFramework
             }
             catch (Exception ex)
             {
-                return false;
+                throw new Exception(ex.ToString());
             }
         }
 
