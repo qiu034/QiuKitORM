@@ -74,6 +74,56 @@ namespace QiuKitCore
         }
 
         /// <summary>
+        /// 一般的带条件查找规则，查找所有字段并返回对应实体类的List
+        /// </summary>
+        /// <param name="table">数据表表名</param>
+        /// <param name="model">查询类</param>
+        /// <returns></returns>
+        public List<T> SelectWithCondition(string table, T model)
+        {
+            try
+            {
+                //初始化查询字段
+                string condition = " 1=1 ";
+
+                //利用反射机制，获取字段名和字段值
+                PropertyInfo[] properties = model.GetType().GetProperties();
+                foreach (PropertyInfo field in properties)
+                {
+                    //若字段值为空，则跳过
+                    if (field.GetValue(model) == null)
+                    {
+                        continue;
+                    }
+                    condition += $" AND {field.Name}='{field.GetValue(model)}' ";
+                }
+
+                string strSql = SqlHelper.Instance.SELECT("*", table, condition);
+                DataTable dt = SqlHelper.Instance.ExecuteDataset(connStr, strSql).Tables[0];
+
+                List<T> list = new List<T>();
+                //遍历DataTable
+                foreach (DataRow dr in dt.Rows)
+                {
+                    foreach (PropertyInfo field in properties)  //遍历字段名
+                    {
+                        //若字段名在DataTable中可以找到相同的列，那么就给该字段赋值
+                        if (dt.Columns.Contains(field.Name))
+                        {
+                            field.SetValue(model, dr[$"{field.Name}"]);
+                        }
+                    }
+                    list.Add(model);
+                }
+                return list;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.ToString());
+            }
+        }
+
+        /// <summary>
         /// 一般添加规则，需要传一个有数据的实体类
         /// 前提：实体类中的字段名称与数据库的完全相同
         /// </summary>
