@@ -34,7 +34,7 @@ namespace QiuKitORM.GUI
         public const int WM_SYSCOMMAND = 0x0112;
         public const int SC_MOVE = 0xF010;
         public const int HTCAPTION = 0x0002;
-        private void panel1_MouseDown(object sender, MouseEventArgs e)
+        private void panel_MouseDown(object sender, MouseEventArgs e)
         {
             ReleaseCapture();
             SendMessage(this.Handle, WM_SYSCOMMAND, SC_MOVE + HTCAPTION, 0);
@@ -141,6 +141,7 @@ namespace QiuKitORM.GUI
             //全选checkedListBox
             for (int i = 0; i < this.checkedListBox1.Items.Count; i++)
             {
+                if(i !=2 && i!= 4)
                 this.checkedListBox1.SetItemChecked(i, true);
             }
 
@@ -165,6 +166,11 @@ namespace QiuKitORM.GUI
         }
 
 
+        private void pictureBox2_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
         /// <summary>
         /// 生成指定文件
         /// </summary>
@@ -184,33 +190,53 @@ namespace QiuKitORM.GUI
                 MessageBox.Show("请先选择数据表！");
                 return;
             }
-
-            string dbName = ListBoxDb.SelectedItem.ToString();
-            for (int i = 0; i < selectedRow.Count; i++)
+            try
             {
-                //生成Model
-                if (checkedListBox1.GetItemChecked(0))
+                string dbName = ListBoxDb.SelectedItem.ToString();
+                for (int i = 0; i < selectedRow.Count; i++)
                 {
-                    var table = selectedRow[i].Cells[0].Value.ToString();
-                    ExecSqlPrint(dbName,table, txtPath.Text + "\\" + table + "Model.cs");
-                }
+                    //生成Model
+                    if (checkedListBox1.GetItemChecked(0))
+                    {
+                        var table = selectedRow[i].Cells[0].Value.ToString();
+                        ExecSqlPrint(dbName, table, txtPath.Text + "\\" + table + "Model.cs");
+                    }
 
-                //生成Repository
-                if (checkedListBox1.GetItemChecked(1))
-                {
-                    var table = selectedRow[i].Cells[0].Value.ToString();
-                    RepositoryPrint(table, txtPath.Text + "\\" + table + "Repository.cs");
-                }
+                    //生成Repository
+                    if (checkedListBox1.GetItemChecked(1))
+                    {
+                        var table = selectedRow[i].Cells[0].Value.ToString();
+                        RepositoryPrint(table, txtPath.Text + "\\" + table + "Repository.cs");
+                    }
 
-                //生成DAL
-                if (checkedListBox1.GetItemChecked(2))
-                {
-                    var table = selectedRow[i].Cells[0].Value.ToString();
-                    DALPrint(table, txtPath.Text + "\\" + table + "Repository.cs");
-                }
+                    //生成DAL
+                    if (checkedListBox1.GetItemChecked(2))
+                    {
+                        var table = selectedRow[i].Cells[0].Value.ToString();
+                        DALPrint(table, txtPath.Text + "\\" + table + "Repository.cs");
+                    }
 
+                    //生成Service
+                    if (checkedListBox1.GetItemChecked(3))
+                    {
+                        var table = selectedRow[i].Cells[0].Value.ToString();
+                        ServicePrint(table, txtPath.Text + "\\" + table + "Service.cs");
+                    }
+
+                    //生成BLL
+                    if (checkedListBox1.GetItemChecked(4))
+                    {
+                        var table = selectedRow[i].Cells[0].Value.ToString();
+                        BLLPrint(table, txtPath.Text + "\\" + table + "Service.cs");
+                    }
+
+                }
+                MessageBox.Show("导出完成！");
             }
-            MessageBox.Show("导出完成！");
+            catch(Exception ex)
+            {
+                MessageBox.Show("导出失败！\r\n"+ex);
+            }
         }
 
         #region 方法 -> 执行Sql,打印需求内容
@@ -272,5 +298,84 @@ namespace QiuKitORM.GUI
             System.IO.File.AppendAllText(path, result.ToString());
         }
         #endregion
+
+        #region 方法 -> 生成Service
+        /// <summary>
+        /// 生成生成Service
+        /// </summary>
+        /// <param name="tableName">数据表名</param>
+        /// <param name="path">生成路径</param>
+        private void ServicePrint(string tableName, string path)
+        {
+            StringBuilder result = new StringBuilder($"public class {tableName}Service \r\n");
+            result.AppendLine("{");
+            result.AppendLine($@"    public List<{tableName}Model> GetAll()");
+            result.AppendLine("    {");
+            result.AppendLine($@"       return {tableName}Repository.Instance.Select({tableName}Repository.table,"""");");
+            result.AppendLine("    }");
+            result.AppendLine("");
+            result.AppendLine($@"    public List<{tableName}Model> GetAllWithCondition({tableName}Model model)");
+            result.AppendLine("    {");
+            result.AppendLine($@"       return {tableName}Repository.Instance.SelectWithCondition({tableName}Repository.table,model);");
+            result.AppendLine("    }");
+            result.AppendLine("");
+            result.AppendLine($@"    public bool Add({tableName}Model model)");
+            result.AppendLine("    {");
+            result.AppendLine($@"       return {tableName}Repository.Instance.Insert({tableName}Repository.table,model);");
+            result.AppendLine("    }");
+            result.AppendLine("");
+            result.AppendLine($@"    public bool Delete(int id)");
+            result.AppendLine("    {");
+            result.AppendLine($@"       return {tableName}Repository.Instance.Delete({tableName}Repository.table,$""id={{id}}"");");
+            result.AppendLine("    }");
+            result.AppendLine("");
+            result.AppendLine($@"    public bool Update(int id, {tableName}Model model)");
+            result.AppendLine("    {");
+            result.AppendLine($@"       return {tableName}Repository.Instance.Update({tableName}Repository.table,model,$""id={{id}}"");");
+            result.AppendLine("    }");
+            result.AppendLine("}");
+            System.IO.File.AppendAllText(path, result.ToString());
+        }
+        #endregion
+
+        #region 方法 -> 生成BLL
+        /// <summary>
+        /// 生成生成BLL
+        /// </summary>
+        /// <param name="tableName">数据表名</param>
+        /// <param name="path">生成路径</param>
+        private void BLLPrint(string tableName, string path)
+        {
+            StringBuilder result = new StringBuilder($"public class {tableName}BLL \r\n");
+            result.AppendLine("{");
+            result.AppendLine($@"    public List<{tableName}Model> GetAll()");
+            result.AppendLine("    {");
+            result.AppendLine($@"       return {tableName}DAL.Instance.Select({tableName}DAL.table,"""");");
+            result.AppendLine("    }");
+            result.AppendLine("");
+            result.AppendLine($@"    public List<{tableName}Model> GetAllWithCondition({tableName}Model model)");
+            result.AppendLine("    {");
+            result.AppendLine($@"       return {tableName}DAL.Instance.SelectWithCondition({tableName}DAL.table,model);");
+            result.AppendLine("    }");
+            result.AppendLine("");
+            result.AppendLine($@"    public bool Add({tableName}Model model)");
+            result.AppendLine("    {");
+            result.AppendLine($@"       return {tableName}DAL.Instance.Insert({tableName}DAL.table,model);");
+            result.AppendLine("    }");
+            result.AppendLine("");
+            result.AppendLine($@"    public bool Delete(int id)");
+            result.AppendLine("    {");
+            result.AppendLine($@"       return {tableName}DAL.Instance.Delete({tableName}DAL.table,$""id={{id}}"");");
+            result.AppendLine("    }");
+            result.AppendLine("");
+            result.AppendLine($@"    public bool Update(int id, {tableName}Model model)");
+            result.AppendLine("    {");
+            result.AppendLine($@"       return {tableName}DAL.Instance.Update({tableName}DAL.table,model,$""id={{id}}"");");
+            result.AppendLine("    }");
+            result.AppendLine("}");
+            System.IO.File.AppendAllText(path, result.ToString());
+        }
+        #endregion
+
     }
 }
