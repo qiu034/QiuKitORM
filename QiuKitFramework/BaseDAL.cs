@@ -18,7 +18,7 @@ namespace QiuKitFramework
     *|--------------------------------------------------------|
     *                                                   By Qjh
     */
-    public class BaseDAL<T> where T:class,new()
+    public class BaseDAL<T> where T : class, new()
     {
         private static BaseDAL<T> _Instance = null;
         public static BaseDAL<T> Instance
@@ -44,14 +44,14 @@ namespace QiuKitFramework
         /// <param name="table">数据表表名</param>
         /// <param name="condition">查询条件，不带Where</param>
         /// <returns></returns>
-        public List<T> Select(string table,string condition)
+        public List<T> Select(string table, string condition)
         {
             try
             {
                 string strSql = SqlHelper.Instance.SELECT("*", table, condition);
                 DataTable dt = SqlHelper.Instance.ExecuteDataset(connStr, strSql).Tables[0];
 
-                List<T> list = new List<T>();               
+                List<T> list = new List<T>();
                 //遍历DataTable
                 foreach (DataRow dr in dt.Rows)
                 {
@@ -61,7 +61,7 @@ namespace QiuKitFramework
                     foreach (PropertyInfo field in properties)  //遍历字段名
                     {
                         //若字段名在DataTable中可以找到相同的列，那么就给该字段赋值
-                        if(dt.Columns.Contains(field.Name))
+                        if (dt.Columns.Contains(field.Name))
                         {
                             field.SetValue(model, dr[$"{field.Name}"]);
                         }
@@ -70,7 +70,7 @@ namespace QiuKitFramework
                 }
                 return list;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new Exception(ex.ToString());
             }
@@ -81,8 +81,9 @@ namespace QiuKitFramework
         /// </summary>
         /// <param name="table">数据表表名</param>
         /// <param name="model">查询类</param>
+        /// <param name="isFuzzy">是否模糊查询</param>
         /// <returns></returns>
-        public List<T> SelectWithCondition(string table, T model)
+        public List<T> SelectWithCondition(string table, T model, bool isFuzzy = false)
         {
             try
             {
@@ -91,14 +92,31 @@ namespace QiuKitFramework
 
                 //利用反射机制，获取字段名和字段值
                 PropertyInfo[] properties = model.GetType().GetProperties();
-                foreach (PropertyInfo field in properties)
+
+                //判断是否模糊查询
+                if (isFuzzy)
                 {
-                    //若字段值为空，则跳过
-                    if (field.GetValue(model) == null)
+                    foreach (PropertyInfo field in properties)
                     {
-                        continue;
+                        //若字段值为空，则跳过
+                        if (field.GetValue(model) == null)
+                        {
+                            continue;
+                        }
+                        condition += $" AND {field.Name} LIKE '%{field.GetValue(model)}%' ";
                     }
-                    condition += $" AND {field.Name}='{field.GetValue(model)}' ";
+                }
+                else
+                {
+                    foreach (PropertyInfo field in properties)
+                    {
+                        //若字段值为空，则跳过
+                        if (field.GetValue(model) == null)
+                        {
+                            continue;
+                        }
+                        condition += $" AND {field.Name}='{field.GetValue(model)}' ";
+                    }
                 }
 
                 string strSql = SqlHelper.Instance.SELECT("*", table, condition);
@@ -133,7 +151,7 @@ namespace QiuKitFramework
         /// <param name="table">数据库表名</param>
         /// <param name="model">带有数据的实体类</param>
         /// <returns>成功返回True</returns>
-        public bool Insert(string table,T model)
+        public bool Insert(string table, T model)
         {
             try
             {
@@ -163,10 +181,10 @@ namespace QiuKitFramework
                 fields = fields.TrimEnd(',');
                 values = values.TrimEnd(',');
 
-                string strSql = SqlHelper.Instance.INSERT(table,fields,values);
-                int result = SqlHelper.Instance.ExecuteNonQuery(connStr,strSql);
-                if(result >0)
-                        return true;
+                string strSql = SqlHelper.Instance.INSERT(table, fields, values);
+                int result = SqlHelper.Instance.ExecuteNonQuery(connStr, strSql);
+                if (result > 0)
+                    return true;
                 return false;
             }
             catch (Exception ex)
@@ -205,7 +223,7 @@ namespace QiuKitFramework
         /// <param name="model">带有数据的实体类(作为修改后的值)</param>
         /// <param name="condition">新增条件，不带Where</param>
         /// <returns></returns>
-        public bool Update(string table, T model,string condition)
+        public bool Update(string table, T model, string condition)
         {
             try
             {
@@ -232,7 +250,7 @@ namespace QiuKitFramework
                 //去除最后一个逗号
                 fields = fields.TrimEnd(',');
 
-                string strSql = SqlHelper.Instance.UPDATE(table,fields,condition);
+                string strSql = SqlHelper.Instance.UPDATE(table, fields, condition);
                 int result = SqlHelper.Instance.ExecuteNonQuery(connStr, strSql);
                 if (result > 0)
                     return true;

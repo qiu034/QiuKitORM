@@ -15,7 +15,7 @@ namespace QiuKitCore
     *|--------------------------------------------------------|
     *                                                   By Qjh
     */
-    public class BaseDAL<T> :IBaseDAL<T>  where T : class, new()
+    public class BaseDAL<T> : IBaseDAL<T> where T : class, new()
     {
         private static BaseDAL<T> _Instance = null;
         public static BaseDAL<T> Instance
@@ -78,8 +78,9 @@ namespace QiuKitCore
         /// </summary>
         /// <param name="table">数据表表名</param>
         /// <param name="model">查询类</param>
+        /// <param name="isFuzzy">是否模糊查询</param>
         /// <returns></returns>
-        public List<T> SelectWithCondition(string table, T model)
+        public List<T> SelectWithCondition(string table, T model, bool isFuzzy = false)
         {
             try
             {
@@ -88,16 +89,32 @@ namespace QiuKitCore
 
                 //利用反射机制，获取字段名和字段值
                 PropertyInfo[] properties = model.GetType().GetProperties();
-                foreach (PropertyInfo field in properties)
-                {
-                    //若字段值为空，则跳过
-                    if (field.GetValue(model) == null)
-                    {
-                        continue;
-                    }
-                    condition += $" AND {field.Name}='{field.GetValue(model)}' ";
-                }
 
+                //判断是否模糊查询
+                if (isFuzzy)
+                {
+                    foreach (PropertyInfo field in properties)
+                    {
+                        //若字段值为空，则跳过
+                        if (field.GetValue(model) == null)
+                        {
+                            continue;
+                        }
+                        condition += $" AND {field.Name} LIKE '%{field.GetValue(model)}%' ";
+                    }
+                }
+                else
+                {
+                    foreach (PropertyInfo field in properties)
+                    {
+                        //若字段值为空，则跳过
+                        if (field.GetValue(model) == null)
+                        {
+                            continue;
+                        }
+                        condition += $" AND {field.Name}='{field.GetValue(model)}' ";
+                    }
+                }
                 string strSql = SqlHelper.Instance.SELECT("*", table, condition);
                 DataTable dt = SqlHelper.Instance.ExecuteDataset(connStr, strSql).Tables[0];
 

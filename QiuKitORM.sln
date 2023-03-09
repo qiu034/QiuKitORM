@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QiuKitFramework", "QiuKitFr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QiuKitCore", "QiuKitCore\QiuKitCore.csproj", "{13FEB562-D0DC-4945-BB63-31210DBA7581}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QiuKitORM.GUI", "QiuKitORM.GUI\QiuKitORM.GUI.csproj", "{A4A6148E-162F-46FF-A132-72FDB46D0351}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QiuKitORM.GUI", "QiuKitORM.GUI\QiuKitORM.GUI.csproj", "{A4A6148E-162F-46FF-A132-72FDB46D0351}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
