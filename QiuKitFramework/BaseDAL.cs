@@ -137,6 +137,7 @@ namespace QiuKitFramework
                     list.Add(resultModel);
                 }
                 return list;
+            }
             catch (Exception ex)
             {
                 throw new Exception(ex.ToString());
