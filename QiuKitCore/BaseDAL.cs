@@ -122,15 +122,16 @@ namespace QiuKitCore
                 //遍历DataTable
                 foreach (DataRow dr in dt.Rows)
                 {
+                    T resultModel = new T();
                     foreach (PropertyInfo field in properties)  //遍历字段名
                     {
                         //若字段名在DataTable中可以找到相同的列，那么就给该字段赋值
                         if (dt.Columns.Contains(field.Name))
                         {
-                            field.SetValue(model, dr[$"{field.Name}"]);
+                            field.SetValue(resultModel, dr[$"{field.Name}"]);
                         }
                     }
-                    list.Add(model);
+                    list.Add(resultModel);
                 }
                 return list;
             }
