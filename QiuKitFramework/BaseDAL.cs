@@ -61,7 +61,7 @@ namespace QiuKitFramework
                     foreach (PropertyInfo field in properties)  //遍历字段名
                     {
                         //若字段名在DataTable中可以找到相同的列，那么就给该字段赋值
-                        if (dt.Columns.Contains(field.Name))
+                        if ((dr[$"{field.Name}"].Equals(DBNull.Value) == false) && dt.Columns.Contains(field.Name))
                         {
                             field.SetValue(model, dr[$"{field.Name}"]);
                         }
@@ -129,7 +129,7 @@ namespace QiuKitFramework
                     foreach (PropertyInfo field in properties)  //遍历字段名
                     {
                         //若字段名在DataTable中可以找到相同的列，那么就给该字段赋值
-                        if (dt.Columns.Contains(field.Name))
+                        if ((dr[$"{field.Name}"].Equals(DBNull.Value) == false) && dt.Columns.Contains(field.Name))
                         {
                             field.SetValue(resultModel, dr[$"{field.Name}"]);
                         }
