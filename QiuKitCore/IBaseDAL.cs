@@ -16,6 +16,15 @@ namespace QiuKitCore
 
 
         /// <summary>
+        /// 一般的带条件查找规则，查找所有字段并返回对应实体类的List
+        /// </summary>
+        /// <param name="table">数据表表名</param>
+        /// <param name="model">查询类</param>
+        /// <param name="isFuzzy">是否模糊查询</param>
+        /// <returns></returns>
+        public List<T> SelectWithCondition(string table, T model, bool isFuzzy = false);
+
+        /// <summary>
         /// 一般添加规则，需要传一个有数据的实体类
         /// 前提：实体类中的字段名称与数据库的完全相同
         /// </summary>
