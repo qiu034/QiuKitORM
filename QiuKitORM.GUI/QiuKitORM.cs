@@ -277,7 +277,7 @@ namespace QiuKitORM.GUI
         {
             StringBuilder result = new StringBuilder($"public class {tableName}Repository : BaseDAL<{tableName}Model> \r\n");
             result.AppendLine("{");
-            result.AppendLine($@"    private const string table = ""{tableName}"";");
+            result.AppendLine($@"    public const string table = ""{tableName}"";");
             result.AppendLine("}");
             System.IO.File.AppendAllText(path, result.ToString());
         }
