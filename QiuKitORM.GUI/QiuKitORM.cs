@@ -316,7 +316,7 @@ namespace QiuKitORM.GUI
             result.AppendLine("");
             result.AppendLine($@"    public List<{tableName}Model> GetAllWithCondition({tableName}Model model)");
             result.AppendLine("    {");
-            result.AppendLine($@"       return {tableName}Repository.Instance.SelectWithCondition({tableName}Repository.table,model);");
+            result.AppendLine($@"       return {tableName}Repository.Instance.Select({tableName}Repository.table,model);");
             result.AppendLine("    }");
             result.AppendLine("");
             result.AppendLine($@"    public bool Add({tableName}Model model)");
@@ -355,7 +355,7 @@ namespace QiuKitORM.GUI
             result.AppendLine("");
             result.AppendLine($@"    public List<{tableName}Model> GetAllWithCondition({tableName}Model model)");
             result.AppendLine("    {");
-            result.AppendLine($@"       return {tableName}DAL.Instance.SelectWithCondition({tableName}DAL.table,model);");
+            result.AppendLine($@"       return {tableName}DAL.Instance.Select({tableName}DAL.table,model);");
             result.AppendLine("    }");
             result.AppendLine("");
             result.AppendLine($@"    public bool Add({tableName}Model model)");
