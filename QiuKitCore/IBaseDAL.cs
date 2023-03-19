@@ -22,7 +22,7 @@ namespace QiuKitCore
         /// <param name="model">查询类</param>
         /// <param name="isFuzzy">是否模糊查询</param>
         /// <returns></returns>
-        public List<T> SelectWithCondition(string table, T model, bool isFuzzy = false);
+        public List<T> Select(string table, T model, bool isFuzzy = false);
 
         /// <summary>
         /// 一般添加规则，需要传一个有数据的实体类
@@ -30,8 +30,9 @@ namespace QiuKitCore
         /// </summary>
         /// <param name="table">数据库表名</param>
         /// <param name="model">带有数据的实体类</param>
+        /// <param name="checkDuplicates">是否查重</param>
         /// <returns>成功返回True</returns>
-        public bool Insert(string table, T model);
+        public bool Insert(string table, T model, bool checkDuplicates = false);
 
 
         /// <summary>

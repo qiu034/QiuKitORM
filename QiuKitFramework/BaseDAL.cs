@@ -83,7 +83,7 @@ namespace QiuKitFramework
         /// <param name="model">查询类</param>
         /// <param name="isFuzzy">是否模糊查询</param>
         /// <returns></returns>
-        public List<T> SelectWithCondition(string table, T model, bool isFuzzy = false)
+        public List<T> Select(string table, T model, bool isFuzzy = false)
         {
             try
             {
@@ -150,11 +150,22 @@ namespace QiuKitFramework
         /// </summary>
         /// <param name="table">数据库表名</param>
         /// <param name="model">带有数据的实体类</param>
+        /// <param name="checkDuplicates">是否查重</param>
         /// <returns>成功返回True</returns>
-        public bool Insert(string table, T model)
+        public bool Insert(string table, T model, bool checkDuplicates = false)
         {
             try
             {
+                //如果要查重，首先进行查重
+                if (checkDuplicates)
+                {
+                    List<T> duplicatesList = Select(table, model, false);
+                    if (duplicatesList.Count > 0)
+                    {
+                        return false;
+                    }
+                }
+
                 string fields = "";
                 string values = "";
                 //利用反射机制，获取字段名和字段值
