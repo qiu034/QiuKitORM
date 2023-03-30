@@ -185,6 +185,11 @@ namespace QiuKitCore
                     fields += $"{field.Name},";
                     values += $"'{field.GetValue(model)}',";
                 }
+
+                //若所有字段均无传值，则直接返回False
+                if(string.IsNullOrEmpty(fields) || string.IsNullOrEmpty(values))
+                    return false;
+
                 //去除最后一个逗号
                 fields = fields.TrimEnd(',');
                 values = values.TrimEnd(',');
