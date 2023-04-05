@@ -167,48 +167,22 @@ namespace QiuKitFramework
         {
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.Append(" select  ");
-            stringBuilder.Append(" replace(col.name, ' ', '_') ColumnName,  ");
+            stringBuilder.Append(" col.name ColumnName, column_id ColumnId, is_identity,  ");
             stringBuilder.Append(" column_id ColumnId, ");
-            stringBuilder.Append(" case typ.name ");
-            stringBuilder.Append(" when 'bigint' then 'long' ");
-            stringBuilder.Append(" when 'binary' then 'byte[]' ");
-            stringBuilder.Append(" when 'bit' then 'bool' ");
-            stringBuilder.Append(" when 'char' then 'string' ");
-            stringBuilder.Append(" when 'date' then 'DateTime' ");
-            stringBuilder.Append(" when 'datetime' then 'DateTime' ");
-            stringBuilder.Append(" when 'datetime2' then 'DateTime' ");
-            stringBuilder.Append(" when 'datetimeoffset' then 'DateTimeOffset' ");
-            stringBuilder.Append(" when 'decimal' then 'decimal?' ");
-            stringBuilder.Append(" when 'float' then 'float?' ");
-            stringBuilder.Append(" when 'image' then 'byte[]' ");
-            stringBuilder.Append(" when 'int' then 'int?' ");
-            stringBuilder.Append(" when 'money' then 'decimal?' ");
-            stringBuilder.Append(" when 'nchar' then 'string' ");
-            stringBuilder.Append(" when 'ntext' then 'string' ");
-            stringBuilder.Append(" when 'numeric' then 'decimal?' ");
-            stringBuilder.Append(" when 'nvarchar' then 'string' ");
-            stringBuilder.Append(" when 'real' then 'double?' ");
-            stringBuilder.Append(" when 'smalldatetime' then 'DateTime' ");
-            stringBuilder.Append(" when 'smallint' then 'short?' ");
-            stringBuilder.Append(" when 'smallmoney' then 'decimal' ");
-            stringBuilder.Append(" when 'text' then 'string' ");
-            stringBuilder.Append(" when 'time' then 'TimeSpan' ");
-            stringBuilder.Append(" when 'timestamp' then 'DateTime' ");
-            stringBuilder.Append(" when 'tinyint' then 'byte' ");
-            stringBuilder.Append(" when 'uniqueidentifier' then 'Guid' ");
-            stringBuilder.Append(" when 'varbinary' then 'byte[]' ");
-            stringBuilder.Append(" when 'varchar' then 'string' ");
-            stringBuilder.Append(" else 'UNKNOWN_' + typ.name ");
-            stringBuilder.Append("     end ColumnType, ");
-            stringBuilder.Append(" case  ");
-            stringBuilder.Append("  when col.is_nullable = 1 and typ.name in ('bigint', 'bit', 'date', 'datetime', 'datetime2', 'datetimeoffset', 'decimal', 'float', 'int', 'money', 'numeric', 'real', 'smalldatetime', 'smallint', 'smallmoney', 'time', 'tinyint', 'uniqueidentifier') ");
-            stringBuilder.Append("  then '?' ");
-            stringBuilder.Append("  else '' ");
-            stringBuilder.Append("  end NullableSign ");
-            stringBuilder.Append("   from sys.columns col ");
-            stringBuilder.Append("  join sys.types typ on ");
-            stringBuilder.Append("  col.system_type_id = typ.system_type_id AND col.user_type_id = typ.user_type_id ");
-            stringBuilder.Append($"  where object_id = object_id('{tableName}') ");
+            stringBuilder.Append(" case typ.name  when 'bigint' then 'long'  when 'binary' then 'byte[]'  when 'bit' then 'bool' " +
+                " \r\n when 'char' then 'string'  when 'date' then 'DateTime'  when 'datetime' then 'DateTime'  " +
+                " \r\n when 'datetime2' then 'DateTime'  when 'datetimeoffset' then 'DateTimeOffset'  when 'decimal' then 'decimal?' " +
+                " \r\n when 'float' then 'float?'  when 'image' then 'byte[]'  when 'int' then 'int?'  when 'money' then 'decimal?' " +
+                " \r\n when 'nchar' then 'string'  when 'ntext' then 'string'  when 'numeric' then 'decimal?'  when 'nvarchar' then 'string'" +
+                " \r\n when 'real' then 'double?'  when 'smalldatetime' then 'DateTime'  when 'smallint' then 'short?'  " +
+                " \r\n when 'smallmoney' then 'decimal'  when 'text' then 'string'  when 'time' then 'TimeSpan'  " +
+                " \r\n when 'timestamp' then 'DateTime'  when 'tinyint' then 'byte'  when 'uniqueidentifier' then 'Guid'  " +
+                " \r\n when 'varbinary' then 'byte[]'  when 'varchar' then 'string'  else 'UNKNOWN_' + typ.name end ColumnType");
+            stringBuilder.Append(" from sys.columns col,sys.types typ ");
+            stringBuilder.Append(" where");
+            stringBuilder.Append(" col.system_type_id = typ.system_type_id ");
+            stringBuilder.Append(" AND col.user_type_id = typ.user_type_id ");
+            stringBuilder.Append($" AND object_id = object_id('{tableName}')");
             stringBuilder.Append("  ");
             return stringBuilder.ToString();
         }

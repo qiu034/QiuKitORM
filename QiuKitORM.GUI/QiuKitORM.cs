@@ -255,6 +255,10 @@ namespace QiuKitORM.GUI
             for (int i = 0; i < dt.Rows.Count; i++)
             {
                 result.AppendLine($"    private {dt.Rows[i]["ColumnType"]} _{dt.Rows[i]["ColumnName"]};");
+                if ((bool)dt.Rows[i]["is_identity"])
+                {
+                    result.AppendLine($"    [QiuKitCore.QiuKitModel(IsIdentity = true)]");
+                }                  
                 result.AppendLine($"    public {dt.Rows[i]["ColumnType"]} {dt.Rows[i]["ColumnName"]}");
                 result.AppendLine("    {");
                 result.AppendLine($"        get{{ return _{dt.Rows[i]["ColumnName"]}; }}");
