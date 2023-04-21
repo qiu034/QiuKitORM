@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml;
+using System.Xml.XPath;
 using static System.Windows.Forms.ListBox;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
@@ -141,8 +142,8 @@ namespace QiuKitORM.GUI
             //全选checkedListBox
             for (int i = 0; i < this.checkedListBox1.Items.Count; i++)
             {
-                if(i !=2 && i!= 4)
-                this.checkedListBox1.SetItemChecked(i, true);
+                if (i != 2 && i != 4 && i != 5)
+                    this.checkedListBox1.SetItemChecked(i, true);
             }
 
             //获取桌面路径
@@ -213,7 +214,7 @@ namespace QiuKitORM.GUI
                     if (checkedListBox1.GetItemChecked(2))
                     {
                         var table = selectedRow[i].Cells[0].Value.ToString();
-                        DALPrint(table, txtPath.Text + "\\" + table + "Repository.cs");
+                        DALPrint(table, txtPath.Text + "\\" + table + "DAL.cs");
                     }
 
                     //生成Service
@@ -227,30 +228,43 @@ namespace QiuKitORM.GUI
                     if (checkedListBox1.GetItemChecked(4))
                     {
                         var table = selectedRow[i].Cells[0].Value.ToString();
-                        BLLPrint(table, txtPath.Text + "\\" + table + "Service.cs");
+                        BLLPrint(table, txtPath.Text + "\\" + table + "BLL.cs");
+                    }
+
+                    //生成Controller
+                    if (checkedListBox1.GetItemChecked(5))
+                    {
+                        var table = selectedRow[i].Cells[0].Value.ToString();
+                        ControllerPrint(table, txtPath.Text + "\\" + table + "Controller.cs");
                     }
 
                 }
                 MessageBox.Show("导出完成！");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                MessageBox.Show("导出失败！\r\n"+ex);
+                MessageBox.Show("导出失败！\r\n" + ex);
             }
         }
 
-        #region 方法 -> 执行Sql,打印需求内容
+        #region 方法 -> 生成Model
         /// <summary>
-        /// 执行Sql,打印需求内容
+        /// 生成Model
         /// </summary>
         /// <param name="dbName">数据库名</param>
         /// <param name="tableName">数据表名</param>
         /// <param name="path">生成路径</param>
-        private void ExecSqlPrint(string dbName,string tableName, string path)
+        private void ExecSqlPrint(string dbName, string tableName, string path)
         {
             string connectionString = string.Format("Data Source={0};Initial Catalog={1};User ID={2};password={3}", host, dbName, user, pwd);
             DataTable dt = SqlHelper.Instance.ExecuteDataset(connectionString, SqlHelper.Instance.GetModelStr(tableName)).Tables[0];
-            StringBuilder result = new StringBuilder($"public class {tableName}Model \r\n");
+            StringBuilder result = new StringBuilder();
+            if (!string.IsNullOrEmpty(txtNameSpace.Text))
+            {
+                result.AppendLine($"namespace {txtNameSpace.Text}.Models");
+                result.AppendLine("{");
+            }
+            result.AppendLine($"public class {tableName}Model");
             result.AppendLine("{");
             for (int i = 0; i < dt.Rows.Count; i++)
             {
@@ -258,7 +272,7 @@ namespace QiuKitORM.GUI
                 if ((bool)dt.Rows[i]["is_identity"])
                 {
                     result.AppendLine($"    [QiuKitCore.QiuKitModel(IsIdentity = true)]");
-                }                  
+                }
                 result.AppendLine($"    public {dt.Rows[i]["ColumnType"]} {dt.Rows[i]["ColumnName"]}");
                 result.AppendLine("    {");
                 result.AppendLine($"        get{{ return _{dt.Rows[i]["ColumnName"]}; }}");
@@ -267,6 +281,10 @@ namespace QiuKitORM.GUI
                 result.AppendLine("");
             }
             result.AppendLine("}");
+            if (!string.IsNullOrEmpty(txtNameSpace.Text))
+            {
+                result.AppendLine("}");
+            }
             System.IO.File.AppendAllText(path, result.ToString());
         }
         #endregion
@@ -279,10 +297,20 @@ namespace QiuKitORM.GUI
         /// <param name="path">生成路径</param>
         private void RepositoryPrint(string tableName, string path)
         {
-            StringBuilder result = new StringBuilder($"public class {tableName}Repository : BaseDAL<{tableName}Model> \r\n");
+            StringBuilder result = new StringBuilder();
+            if (!string.IsNullOrEmpty(txtNameSpace.Text))
+            {
+                result.AppendLine($"namespace {txtNameSpace.Text}.Repository");
+                result.AppendLine("{");
+            }
+            result.AppendLine($"public class {tableName}Repository : BaseDAL<{tableName}Model> \r\n");
             result.AppendLine("{");
             result.AppendLine($@"    public const string table = ""{tableName}"";");
             result.AppendLine("}");
+            if (!string.IsNullOrEmpty(txtNameSpace.Text))
+            {
+                result.AppendLine("}");
+            }
             System.IO.File.AppendAllText(path, result.ToString());
         }
         #endregion
@@ -295,10 +323,20 @@ namespace QiuKitORM.GUI
         /// <param name="path">生成路径</param>
         private void DALPrint(string tableName, string path)
         {
-            StringBuilder result = new StringBuilder($"public class {tableName}DAL : BaseDAL<{tableName}Model> \r\n");
+            StringBuilder result = new StringBuilder();
+            if (!string.IsNullOrEmpty(txtNameSpace.Text))
+            {
+                result.AppendLine($"namespace {txtNameSpace.Text}.DAL");
+                result.AppendLine("{");
+            }
+            result.AppendLine($"public class {tableName}DAL : BaseDAL<{tableName}Model> \r\n");
             result.AppendLine("{");
             result.AppendLine($@"    private const string table = ""{tableName}"";");
             result.AppendLine("}");
+            if (!string.IsNullOrEmpty(txtNameSpace.Text))
+            {
+                result.AppendLine("}");
+            }
             System.IO.File.AppendAllText(path, result.ToString());
         }
         #endregion
@@ -311,7 +349,13 @@ namespace QiuKitORM.GUI
         /// <param name="path">生成路径</param>
         private void ServicePrint(string tableName, string path)
         {
-            StringBuilder result = new StringBuilder($"public class {tableName}Service \r\n");
+            StringBuilder result = new StringBuilder();
+            if (!string.IsNullOrEmpty(txtNameSpace.Text))
+            {
+                result.AppendLine($"namespace {txtNameSpace.Text}.Service");
+                result.AppendLine("{");
+            }
+            result.AppendLine($"public class {tableName}Service \r\n");
             result.AppendLine("{");
             result.AppendLine($@"    public List<{tableName}Model> GetAll()");
             result.AppendLine("    {");
@@ -338,6 +382,10 @@ namespace QiuKitORM.GUI
             result.AppendLine($@"       return {tableName}Repository.Instance.Update({tableName}Repository.table,model,$""id={{id}}"");");
             result.AppendLine("    }");
             result.AppendLine("}");
+            if (!string.IsNullOrEmpty(txtNameSpace.Text))
+            {
+                result.AppendLine("}");
+            }
             System.IO.File.AppendAllText(path, result.ToString());
         }
         #endregion
@@ -350,7 +398,13 @@ namespace QiuKitORM.GUI
         /// <param name="path">生成路径</param>
         private void BLLPrint(string tableName, string path)
         {
-            StringBuilder result = new StringBuilder($"public class {tableName}BLL \r\n");
+            StringBuilder result = new StringBuilder();
+            if (!string.IsNullOrEmpty(txtNameSpace.Text))
+            {
+                result.AppendLine($"namespace {txtNameSpace.Text}.BLL");
+                result.AppendLine("{");
+            }
+            result.AppendLine($"public class {tableName}BLL \r\n");
             result.AppendLine("{");
             result.AppendLine($@"    public List<{tableName}Model> GetAll()");
             result.AppendLine("    {");
@@ -377,6 +431,70 @@ namespace QiuKitORM.GUI
             result.AppendLine($@"       return {tableName}DAL.Instance.Update({tableName}DAL.table,model,$""id={{id}}"");");
             result.AppendLine("    }");
             result.AppendLine("}");
+            if (!string.IsNullOrEmpty(txtNameSpace.Text))
+            {
+                result.AppendLine("}");
+            }
+            System.IO.File.AppendAllText(path, result.ToString());
+        }
+        #endregion
+
+        #region 方法 -> 生成Controller
+        /// <summary>
+        /// 生成Controller
+        /// </summary>
+        /// <param name="tableName">数据表名</param>
+        /// <param name="path">生成路径</param>
+        private void ControllerPrint(string tableName, string path)
+        {
+            StringBuilder result = new StringBuilder();
+            if (!string.IsNullOrEmpty(txtNameSpace.Text))
+            {
+                result.AppendLine($"namespace {txtNameSpace.Text}.Controllers");
+                result.AppendLine("{");
+            }
+            result.AppendLine("[Route(\"[controller]/[action]\")]");
+            result.AppendLine("[ApiController]");
+            result.AppendLine($"public class {tableName}Controller : ControllerBase");
+            result.AppendLine("{");
+
+            result.AppendLine("    [HttpPost]");
+            result.AppendLine($"    public ApiResult<List<Models.{tableName}Model>> GetAllWithCondition(Models.{tableName}Model model)");
+            result.AppendLine("    {");
+            result.AppendLine($"       List<Models.{tableName}Model> list = Service.{tableName}Service.Instance.GetAllWithCondition(model);");
+            result.AppendLine("       return Utility.ApiResult.ApiResultHelper.Instance.Success(list);");
+            result.AppendLine("    }");
+            result.AppendLine("");
+
+            result.AppendLine("    [HttpPost]");
+            result.AppendLine($"    public ApiResult<bool> Delete(int id)");
+            result.AppendLine("    {");
+            result.AppendLine($"       bool result = Service.{tableName}Service.Instance.Delete(id);");
+            result.AppendLine("       return Utility.ApiResult.ApiResultHelper.Instance.Success(result);");
+            result.AppendLine("    }");
+            result.AppendLine("");
+
+            result.AppendLine("    [HttpPost]");
+            result.AppendLine($"    public ApiResult<bool> Add({tableName}Model model)");
+            result.AppendLine("    {");
+            result.AppendLine($"       bool result = Service.{tableName}Service.Instance.Add(model);");
+            result.AppendLine("       return Utility.ApiResult.ApiResultHelper.Instance.Success(result);");
+            result.AppendLine("    }");
+            result.AppendLine("");
+
+            result.AppendLine("    [HttpPost]");
+            result.AppendLine($"    public ApiResult<bool> Update(int id, {tableName}Model model)");
+            result.AppendLine("    {");
+            result.AppendLine($"       bool result = Service.{tableName}Service.Instance.Update(id, model);");
+            result.AppendLine("       return Utility.ApiResult.ApiResultHelper.Instance.Success(result);");
+            result.AppendLine("    }");
+            result.AppendLine("");
+
+            result.AppendLine("}");
+            if (!string.IsNullOrEmpty(txtNameSpace.Text))
+            {
+                result.AppendLine("}");
+            }
             System.IO.File.AppendAllText(path, result.ToString());
         }
         #endregion
